@@ -1,104 +1,108 @@
 CREATE TABLE Etudiant (
     id_etudiant SERIAL PRIMARY KEY,
-    code_etudiant VARCHAR(50) NOT NULL,
-    nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL,
-    date_naissance DATE NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    adresse VARCHAR(200) NOT NULL,
-    telephone VARCHAR(20) NOT NULL,
+    code_etudiant VARCHAR(50) UNIQUE NOT NULL,
+    nom VARCHAR(50) NOT NULL,
+    prenom VARCHAR(50) NOT NULL,
+    date_naissance DATE,
+    email VARCHAR(100) UNIQUE,
+    adresse VARCHAR(255),
+    telephone VARCHAR(15),
     date_inscription DATE NOT NULL
+);
+
+CREATE TABLE Enseignant (
+    id_enseignant SERIAL PRIMARY KEY,
+    code_enseignant VARCHAR(50) UNIQUE NOT NULL,
+    nom VARCHAR(50) NOT NULL,
+    prenom VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    telephone VARCHAR(15),
+    date_embauche DATE,
+    departement VARCHAR(100)
 );
 
 CREATE TABLE Cours (
     id_cours SERIAL PRIMARY KEY,
+    code_cours VARCHAR(50) UNIQUE NOT NULL,
     nom_cours VARCHAR(100) NOT NULL,
     description TEXT,
-    annee INTEGER NOT NULL,
-    credits INTEGER NOT NULL,
-    niveau INTEGER NOT NULL
+    semestre VARCHAR(20),
+    annee INT,
+    credits INT,
+    niveau VARCHAR(20),
+    id_enseignant INT NOT NULL,
+    FOREIGN KEY (id_enseignant) REFERENCES Enseignant(id_enseignant)
 );
+
 
 CREATE TABLE Inscription (
     id_inscription SERIAL PRIMARY KEY,
     id_etudiant INT NOT NULL,
     id_cours INT NOT NULL,
-    status_inscription VARCHAR(50) NOT NULL,
+    date_inscription DATE NOT NULL,
+    statut_inscription VARCHAR(50),
     FOREIGN KEY (id_etudiant) REFERENCES Etudiant(id_etudiant),
     FOREIGN KEY (id_cours) REFERENCES Cours(id_cours)
-);
-
-CREATE TABLE Enseignant (
-    id_enseignant SERIAL PRIMARY KEY,
-    code_enseignant VARCHAR(50) NOT NULL,
-    nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    telephone VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE Examen (
     id_examen SERIAL PRIMARY KEY,
     id_cours INT NOT NULL,
-    id_etudiant INT NOT NULL,
-    type_examen VARCHAR(50) NOT NULL,
     date_examen DATE NOT NULL,
-    coefficient FLOAT NOT NULL,
-    FOREIGN KEY (id_cours) REFERENCES Cours(id_cours),
-    FOREIGN KEY (id_etudiant) REFERENCES Etudiant(id_etudiant)
+    type_examen VARCHAR(50),
+    coefficient FLOAT,
+    FOREIGN KEY (id_cours) REFERENCES Cours(id_cours)
 );
 
--- Insert data into Etudiant table
-INSERT INTO Etudiant (code_etudiant, nom, prenom, date_naissance, email, adresse, telephone, date_inscription)
-VALUES
-    ('ET001', 'Dupont', 'Jean', '1998-05-12', 'jean.dupont@example.com', '123 Rue de la Paix, Paris', '0612345678', '2020-09-01'),
-    ('ET002', 'Leblanc', 'Sophie', '1999-11-20', 'sophie.leblanc@example.com', '456 Avenue des Champs-Élysées, Paris', '0687654321', '2021-01-15'),
-    ('ET003', 'Moreau', 'Julien', '2000-03-05', 'julien.moreau@example.com', '789 Boulevard Saint-Germain, Paris', '0698765432', '2020-09-15'),
-    ('ET004', 'Fournier', 'Émilie', '2001-07-18', 'emilie.fournier@example.com', '321 Rue de Rivoli, Paris', '0612345698', '2021-02-01'),
-    ('ET005', 'Mercier', 'Thomas', '2002-12-02', 'thomas.mercier@example.com', '654 Avenue Montaigne, Paris', '0687654312', '2021-09-01');
+CREATE TABLE Note (
+    id_note SERIAL PRIMARY KEY,
+    id_etudiant INT NOT NULL,
+    id_examen INT NOT NULL,
+    valeur_note FLOAT NOT NULL,
+    date_notation DATE NOT NULL,
+    appreciation VARCHAR(255),
+    FOREIGN KEY (id_etudiant) REFERENCES Etudiant(id_etudiant),
+    FOREIGN KEY (id_examen) REFERENCES Examen(id_examen)
+);
 
--- Insert data into Cours table
-INSERT INTO Cours (nom_cours, description, annee, credits, niveau)
-VALUES
-    ('Programmation Orientée Objet', 'Cours de programmation en Python', 2022, 6, 2),
-    ('Bases de Données Relationnelles', 'Cours sur les concepts des bases de données', 2022, 5, 2),
-    ('Analyse Numérique', 'Cours de mathématiques appliquées', 2023, 4, 3),
-    ('Statistiques Appliquées', 'Cours d''introduction aux statistiques', 2023, 5, 2),
-    ('Algorithmique Avancée', 'Cours sur les algorithmes complexes', 2024, 6, 3);
 
--- Insert data into Inscription table
-INSERT INTO Inscription (id_etudiant, id_cours, status_inscription)
-VALUES
-    (1, 1, 'Inscrit'),
-    (1, 2, 'Inscrit'),
-    (2, 1, 'Inscrit'),
-    (2, 3, 'Inscrit'),
-    (3, 2, 'Inscrit'),
-    (3, 4, 'Inscrit'),
-    (4, 3, 'Inscrit'),
-    (4, 5, 'Inscrit'),
-    (5, 1, 'Inscrit'),
-    (5, 4, 'Inscrit');
+-- Insertion des données dans la table Etudiant
+INSERT INTO Etudiant (code_etudiant, nom, prenom, date_naissance, email, adresse, telephone, date_inscription) VALUES
+('E2024001', 'Dupont', 'Jean', '2000-05-10', 'jean.dupont@example.com', '10 rue de Paris, Paris', '0601020304', '2024-01-01'),
+('E2024002', 'Martin', 'Sophie', '2001-03-15', 'sophie.martin@example.com', '12 avenue des Champs, Lyon', '0611223344', '2024-01-02'),
+('E2024003', 'Bernard', 'Luc', '1999-07-20', 'luc.bernard@example.com', '8 rue du Nord, Lille', '0622334455', '2024-01-03'),
+('E2024004', 'Leroy', 'Camille', '2000-11-25', 'camille.leroy@example.com', '15 boulevard Sud, Marseille', '0633445566', '2024-01-04');
 
--- Insert data into Enseignant table
-INSERT INTO Enseignant (code_enseignant, nom, prenom, email, telephone)
-VALUES
-    ('ENS001', 'Dupuis', 'Cécile', 'cecile.dupuis@example.com', '0612345987'),
-    ('ENS002', 'Lefebvre', 'Olivier', 'olivier.lefebvre@example.com', '0698765432'),
-    ('ENS003', 'Bonnet', 'Nathalie', 'nathalie.bonnet@example.com', '0687654321'),
-    ('ENS004', 'Girard', 'Philippe', 'philippe.girard@example.com', '0612345678'),
-    ('ENS005', 'Leroy', 'Julie', 'julie.leroy@example.com', '0698765412');
+-- Insertion des données dans la table Enseignant
+INSERT INTO Enseignant (code_enseignant, nom, prenom, email, telephone, date_embauche, departement) VALUES
+('ENS2024001', 'Durand', 'Paul', 'paul.durand@example.com', '0701020304', '2015-09-01', 'Informatique'),
+('ENS2024002', 'Morel', 'Nathalie', 'nathalie.morel@example.com', '0711223344', '2017-10-15', 'Mathématiques'),
+('ENS2024003', 'Roux', 'Pierre', 'pierre.roux@example.com', '0722334455', '2019-01-20', 'Physique');
 
--- Insert data into Examen table
-INSERT INTO Examen (id_cours, id_etudiant, type_examen, date_examen, coefficient)
-VALUES
-    (1, 1, 'Final', '2022-12-15', 0.6),
-    (1, 2, 'Final', '2022-12-15', 0.6),
-    (2, 3, 'Partiel', '2022-11-10', 0.4),
-    (2, 4, 'Partiel', '2022-11-10', 0.4),
-    (3, 2, 'Final', '2023-05-20', 0.8),
-    (3, 4, 'Final', '2023-05-20', 0.8),
-    (4, 3, 'Partiel', '2023-04-01', 0.5),
-    (4, 5, 'Partiel', '2023-04-01', 0.5),
-    (5, 1, 'Final', '2024-06-10', 0.7),
-    (5, 4, 'Final', '2024-06-10', 0.7);
+-- Insertion des données dans la table Cours
+INSERT INTO Cours (code_cours, nom_cours, description, semestre, annee, credits, niveau, id_enseignant) VALUES
+('CS101', 'Programmation en C', 'Introduction à la programmation en langage C', 'S1', 2024, 6, 'Débutant', 1),
+('CS102', 'Structures de Données', 'Étude des structures de données fondamentales', 'S2', 2024, 6, 'Intermédiaire', 1),
+('MATH201', 'Analyse Mathématique', 'Cours avancé sur l’analyse mathématique', 'S1', 2024, 5, 'Avancé', 2),
+('PHY101', 'Mécanique Classique', 'Principes de la mécanique classique', 'S1', 2024, 5, 'Débutant', 3);
+
+-- Insertion des données dans la table Inscription
+INSERT INTO Inscription (id_etudiant, id_cours, date_inscription, statut_inscription) VALUES
+(1, 1, '2024-01-05', 'Validée'),
+(2, 2, '2024-01-05', 'Validée'),
+(3, 3, '2024-01-06', 'En attente'),
+(4, 4, '2024-01-06', 'Validée');
+
+-- Insertion des données dans la table Examen
+INSERT INTO Examen (id_cours, date_examen, type_examen, coefficient) VALUES
+(1, '2024-06-10', 'Partiel', 1.5),
+(2, '2024-06-12', 'Partiel', 1.5),
+(3, '2024-06-15', 'Final', 2.0),
+(4, '2024-06-20', 'Final', 2.0);
+
+-- Insertion des données dans la table Note
+INSERT INTO Note (id_etudiant, id_examen, valeur_note, date_notation, appreciation) VALUES
+(1, 1, 14.5, '2024-06-12', 'Très Bien'),
+(2, 2, 12.0, '2024-06-13', 'Bien'),
+(3, 3, 10.0, '2024-06-16', 'Moyen'),
+(4, 4, 17.5, '2024-06-21', 'Excellent');
